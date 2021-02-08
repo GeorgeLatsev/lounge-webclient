@@ -1,0 +1,15 @@
+@import '@angular/material/prebuilt-themes/deeppurple-amber.css';
+
+@import 'tailwindcss/base';
+
+@import 'tailwindcss/components';
+
+@import 'tailwindcss/utilities';
+
+input:focus, button:focus, div:focus {
+    outline: none;
+}
+
+input[type="button"] {
+    outline:none;
+}

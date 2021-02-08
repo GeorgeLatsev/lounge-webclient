@@ -1,0 +1,8 @@
+<ngx-spinner bdColor="#262626" color="#D9D9D9" type="line-scale-pulse-out-rapid"></ngx-spinner>
+<div *ngIf="userService.getUser() | async as user">
+    <welcome-page *ngIf="user.name === ''"></welcome-page>
+    <div *ngIf="user.name !== ''" class="w-screen h-screen flex flex-row">
+        <app-side-menu [user]="user"></app-side-menu>
+        <router-outlet></router-outlet>
+    </div>
+</div>

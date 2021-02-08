@@ -1,0 +1,219 @@
+<div class="absolute top-0 left-0 z-40 w-screen h-screen">
+    <div class="flex flex-row h-screen">
+        <div class="flex w-36 bg-c4">
+
+        </div>
+        <div class="flex flex-col w-72 bg-c4">
+            <div class="select-none ml-8 mt-8 mr-8">
+                <div>
+                    <div class="font-bold pl-1 text-xs text-c1">USER SETTINGS</div>
+                    <div class="flex text-lg p-1 mt-1 rounded-sm text-c1 hover:bg-c2 cursor-pointer" [ngClass]="{'bg-c3':
+                        tab===Tab.Profile, 'hover:bg-c3': tab===Tab.Profile}" (click)="tab = Tab.Profile">
+                        Profile
+                    </div>
+                </div>
+                <div class="mt-8 border-t border-c2">
+                    <div class="font-bold pl-1 mt-4 text-xs text-c1">APP SETTINGS</div>
+                    <div class="flex text-lg p-1 mt-1 rounded-sm text-c1 hover:bg-c2 cursor-pointer" [ngClass]="{'bg-c3':
+                        tab===Tab.Appearance, 'hover:bg-c3': tab===Tab.Appearance}" (click)="tab = Tab.Appearance">
+                        Appearance
+                    </div>
+                </div>
+                <div class="mt-8 border-t border-c2">
+                    <div class="flex text-lg p-1 mt-2 rounded-sm text-red-700  hover:bg-red-700 hover:bg-opacity-25 cursor-pointer"
+                        (click)="logout()">
+                        Log Out
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="flex flex-1 bg-c1 p-8">
+            <div *ngIf="tab === Tab.Profile" class="flex-1">
+                <div *ngIf="user$ | async as user" class="bg-c4 flex flex-col">
+                    <div class="flex flex-row justify-between m-8">
+                        <div class="flex">
+                            <div class="flex w-28 h-28 bg-c3 cursor-pointer" tooltip="Edit Avatar" placement="right"
+                                (click)="toggleAvatarEdit()">
+                                <img class="w-28 h-28 pointer-events-none select-none" *ngIf="user$ | async as user"
+                                    src="{{user.avatarUrl}}"
+                                    onerror='this.onerror = null; this.src="https://avatars.dicebear.com/4.5/api/avataaars/d.svg"'>
+                            </div>
+                            <div class="ml-8 select-none">
+                                <span class="text-c1 font-bold text-2xl cursor-pointer" tooltip="Copy" placement="right"
+                                    [cdkCopyToClipboard]="user.name + '#' + user.tag"
+                                    (click)="snackBar.open('Copied', '', { duration: 1000})">
+                                    {{user.name}}<span class="font-normal text-base">#{{user.tag}}</span>
+                                </span>
+                                <div class="text-c2 text-sm cursor-pointer" tooltip="Copy" placement="right"
+                                    [cdkCopyToClipboard]="user.id"
+                                    (click)="snackBar.open('Copied', '', { duration: 1000})">
+                                    {{user.id}}
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class=" bg-c4 hover:bg-c3 p-1 m-1 text-c1 rounded-sm cursor-pointer select-none"
+                                (click)="toggleNameEdit()">
+                                Edit
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div *ngIf="nameIsBeingEdited" class="flex flex-col mt-4 bg-c4 p-8">
+                    <div class="flex flex-col select-none">
+                        <form [formGroup]="nameForm" (ngSubmit)="onNameSubmit(nameForm.value)"
+                            class="flex flex-row bg-c4 my-2 p-2 border">
+                            <input class="flex-1 bg-c4 text-c1" id="name" type="text" formControlName="name"
+                                placeholder="Enter a Name">
+                            <button class="flex button mx-2 my-1 px-1 rounded-none" type="submit"
+                                [disabled]="!nameForm.valid"
+                                [ngClass]="{'bg-c2 cursor-default': !nameForm.valid, 'bg-c1 cursor-pointer': nameForm.valid}">Change</button>
+                        </form>
+                        <div class="flex text-c2">Note: Your Tag will be changed!
+                        </div>
+                    </div>
+                </div>
+                <div *ngIf="avatarIsBeingEdited" class="flex flex-row mt-4 bg-c4 p-8">
+                    <div class="flex w-28 h-28 bg-c3">
+                        <img class="w-28 h-28 pointer-events-none select-none"
+                            src="https://avatars.dicebear.com/4.5/api/avataaars/d.svg?top[]={{top}}&hatColor[]={{hatColor}}&hairColor[]={{hairColor}}&accessoriesChance={{accessories==='none'? 0 : 100}}&accessories[]={{accessories==='none'? accessoriesOptions[1] : accessories}}&accessoriesColor[]={{accessoriesColor}}&facialHairChance={{facialHair==='none'? 0 : 100}}&facialHair[]={{facialHair==='none'? facialHairOptions[1] : facialHair}}&facialHairColor[]={{facialHairColor}}&clothes[]={{clothes}}&clothesColor[]={{clothesColor}}&eyes[]={{eyes}}&eyebrow[]={{eyebrow}}&mouth[]={{mouth}}&skin[]={{skin}}">
+                    </div>
+                    <div class="flex-1 flex-col ml-8">
+                        <div class="h-96">
+                            <ng-scrollbar>
+                                <div class="flex flex-col">
+                                    <div class="flex flex-row">
+                                        <div *ngFor="let option of topOptions"
+                                            class="cursor-pointer select-none p-1 m-1 text-c2 hover:text-c1"
+                                            [ngClass]="{'bg-c1 text-c3 hover:text-c3': top === option}"
+                                            (click)="top=option">
+                                            {{option}}
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-row"
+                                        *ngIf="top === 'hat' || top === 'hijab' || top === 'turban'">
+                                        <div *ngFor="let option of hatColorOptions"
+                                            class="cursor-pointer select-none p-1 m-1 text-c2 hover:text-c1"
+                                            [ngClass]="{'bg-c1 text-c3 hover:text-c3': hatColor === option}"
+                                            (click)="hatColor=option">
+                                            {{option}}
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-row">
+                                        <div *ngFor="let option of hairColorOptions"
+                                            class="cursor-pointer select-none p-1 m-1 text-c2 hover:text-c1"
+                                            [ngClass]="{'bg-c1 text-c3 hover:text-c3': hairColor === option}"
+                                            (click)="hairColor=option">
+                                            {{option}}
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-row">
+                                        <div *ngFor="let option of accessoriesOptions"
+                                            class="cursor-pointer select-none p-1 m-1 text-c2 hover:text-c1"
+                                            [ngClass]="{'bg-c1 text-c3 hover:text-c3': accessories === option}"
+                                            (click)="accessories=option">
+                                            {{option}}
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-row" *ngIf="accessories !== 'none'">
+                                        <div *ngFor="let option of accessoriesColorOptions"
+                                            class="cursor-pointer select-none p-1 m-1 text-c2 hover:text-c1"
+                                            [ngClass]="{'bg-c1 text-c3 hover:text-c3': accessoriesColor === option}"
+                                            (click)="accessoriesColor=option">
+                                            {{option}}
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-row">
+                                        <div *ngFor="let option of facialHairOptions"
+                                            class="cursor-pointer select-none p-1 m-1 text-c2 hover:text-c1"
+                                            [ngClass]="{'bg-c1 text-c3 hover:text-c3': facialHair === option}"
+                                            (click)="facialHair=option">
+                                            {{option}}
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-row" *ngIf="facialHair !== 'none'">
+                                        <div *ngFor="let option of facialHairColorOptions"
+                                            class="cursor-pointer select-none p-1 m-1 text-c2 hover:text-c1"
+                                            [ngClass]="{'bg-c1 text-c3 hover:text-c3': facialHairColor === option}"
+                                            (click)="facialHairColor=option">
+                                            {{option}}
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-row">
+                                        <div *ngFor="let option of clothesOptions"
+                                            class="cursor-pointer select-none p-1 m-1 text-c2 hover:text-c1"
+                                            [ngClass]="{'bg-c1 text-c3 hover:text-c3': clothes === option}"
+                                            (click)="clothes=option">
+                                            {{option}}
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-row">
+                                        <div *ngFor="let option of clothesColorOptions"
+                                            class="cursor-pointer select-none p-1 m-1 text-c2 hover:text-c1"
+                                            [ngClass]="{'bg-c1 text-c3 hover:text-c3': clothesColor === option}"
+                                            (click)="clothesColor=option">
+                                            {{option}}
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-row">
+                                        <div *ngFor="let option of eyesOptions"
+                                            class="cursor-pointer select-none p-1 m-1 text-c2 hover:text-c1"
+                                            [ngClass]="{'bg-c1 text-c3 hover:text-c3': eyes === option}"
+                                            (click)="eyes=option">
+                                            {{option}}
+                                        </div>
+                                    </div>
+
+                                    <div class="flex flex-row">
+                                        <div *ngFor="let option of eyebrowOptions"
+                                            class="cursor-pointer select-none p-1 m-1 text-c2 hover:text-c1"
+                                            [ngClass]="{'bg-c1 text-c3 hover:text-c3': eyebrow === option}"
+                                            (click)="eyebrow=option">
+                                            {{option}}
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-row">
+                                        <div *ngFor="let option of mouthOptions"
+                                            class="cursor-pointer select-none p-1 m-1 text-c2 hover:text-c1"
+                                            [ngClass]="{'bg-c1 text-c3 hover:text-c3': mouth === option}"
+                                            (click)="mouth=option">
+                                            {{option}}
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-row">
+                                        <div *ngFor="let option of skinOptions"
+                                            class="cursor-pointer select-none p-1 m-1 text-c2 hover:text-c1"
+                                            [ngClass]="{'bg-c1 text-c3 hover:text-c3': skin === option}"
+                                            (click)="skin=option">
+                                            {{option}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </ng-scrollbar>
+                        </div>
+                        <div class="flex flex-row justify-end">
+                            <div class="flex flex-row m-1 p-1 bg-c1 hover:bg-c2 text-c4 cursor-pointer select-none"
+                                (click)="randomizeAvatar()">
+                                Random
+                            </div>
+                            <div class="flex flex-row m-1 p-1 bg-c1 hover:bg-c2 text-c4 cursor-pointer select-none"
+                                (click)="save()">
+                                Save
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="tab === Tab.Appearance">
+                Act like there is a toggle for Light and Dark theme
+            </div>
+        </div>
+        <div class="flex flex-col w-20 justify-end bg-c4">
+            <div class="flex">
+                <div class="w-8 h-8 m-6 cursor-pointer" tooltip="Close" placement="left" (click)="closeEvent.emit()">
+                    <img class="w-8 h-8 pointer-events-none select-none" src="../../../assets/icons/x.svg">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,158 @@
+<div class="w-screen-108 h-screen flex flex-row" *ngIf="!showSettingsOverlay">
+    <div class="flex-1 bg-c1">
+        <div *ngIf="tab === Tab.Home" class="h-screen">
+            <div class="p-6" *ngIf="user$ | async as user">
+                <div class="text-c4 font-bold text-xl">Hello {{user?.name}}#{{user?.tag}}</div>
+            </div>
+        </div>
+        <div *ngIf="tab === Tab.Friends" class="h-screen">
+            <div *ngIf="connectionsService.getWithRelation(RelationshipEnum.Friend) | async as connections">
+                <div class="pl-6 pr-6 pt-6 pb-4 select-none">
+                    <div class="text-c4 font-bold">FRIENDS-{{connections.length}}</div>
+                </div>
+                <div class="h-screen-20 w-screen-128">
+                    <ng-scrollbar>
+                        <div class="ml-6 mr-6 mb-6 select-none">
+                            <div>
+                                <div *ngFor="let connection of connections"
+                                    class="flex flex-row justify-between bg-c4 my-4 p-2 border-t border-b border-c2 cursor-pointer hover:bg-c2">
+                                    <div class=" flex flex-row">
+                                        <div class="flex relative">
+                                            <img class="w-16 h-16 m-2 bg-c2 pointer-events-none select-none"
+                                                src="{{connection.avatarUrl}}"
+                                                onerror='this.onerror = null; this.src="https://avatars.dicebear.com/4.5/api/avataaars/d.svg"'>
+                                            <!--<div class="w-4 h-4 right-0 bottom-0 absolute bg-c1"></div>-->
+                                        </div>
+                                        <div class="flex flex-col justify-center">
+                                            <div class="font-bold text-c1">{{ connection.name }}</div>
+                                            <div class="text-xs text-c1">{{ connection.tag }}</div>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-row">
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-scrollbar>
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="tab === Tab.Requests" class="h-screen">
+            <ng-scrollbar>
+                <div class="m-6 select-none"
+                    *ngIf="connectionsService.getWithRelation(RelationshipEnum.IncomingRequest) | async as incoming">
+                    <div class="text-c4 font-bold">INCOMING-{{incoming.length}}</div>
+                    <div *ngFor="let connection of incoming"
+                        class="flex flex-row justify-between bg-c1 my-4 p-2 border-t border-b border-c2 cursor-pointer hover:bg-c2">
+                        <div class=" flex flex-row">
+                            <div class="flex relative">
+                                <img class="w-16 h-16 pointer-events-none select-none" src="https://avataaars.io/">
+                                <!--<div class="w-4 h-4 right-0 bottom-0 absolute bg-c1"></div>-->
+                            </div>
+                            <div class="flex flex-col justify-center">
+                                <div class="font-bold text-c5">{{ connection.name }}</div>
+                            </div>
+                        </div>
+                        <div class="flex flex-row">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="m-6 select-none"
+                    *ngIf="connectionsService.getWithRelation(RelationshipEnum.OutgoingRequest) | async as outgoing">
+                    <div class="text-c4 font-bold">OUTGOING-{{outgoing.length}}</div>
+                    <div *ngFor="let connection of outgoing"
+                        class="flex flex-row justify-between bg-c1 my-4 p-2 border-t border-b border-c2 cursor-pointer hover:bg-c2">
+                        <div class=" flex flex-row">
+                            <div class="flex relative">
+                                <img class="w-16 h-16 pointer-events-none select-none" src="https://avataaars.io/">
+                                <!--<div class="w-4 h-4 right-0 bottom-0 absolute bg-c1"></div>-->
+                            </div>
+                            <div class="flex flex-col justify-center">
+                                <div class="font-bold text-c5">{{ connection.name }}</div>
+                            </div>
+                        </div>
+                        <div class="flex flex-row">
+
+                        </div>
+                    </div>
+                </div>
+
+            </ng-scrollbar>
+        </div>
+
+        <div *ngIf="tab === Tab.Blocked" class="h-screen">
+            <ng-scrollbar>
+                <div class="m-6 select-none"
+                    *ngIf="connectionsService.getWithRelation(RelationshipEnum.Blocked) | async as connections">
+                    <div class="text-c4 font-bold">BLOCKED-{{connections.length}}</div>
+                    <div *ngFor="let connection of connections"
+                        class="flex flex-row justify-between bg-c1 my-4 p-2 border-t border-b border-c2 cursor-pointer hover:bg-c2">
+                        <div class=" flex flex-row">
+                            <div class="flex relative">
+                                <img class="w-16 h-16 pointer-events-none select-none" src="https://avataaars.io/">
+                                <!--<div class="w-4 h-4 right-0 bottom-0 absolute bg-c1"></div>-->
+                            </div>
+                            <div class="flex flex-col justify-center">
+                                <div class="font-bold text-c5">{{ connection.name }}</div>
+                            </div>
+                        </div>
+                        <div class="flex flex-row">
+                        </div>
+                    </div>
+                </div>
+
+            </ng-scrollbar>
+        </div>
+        <div *ngIf="tab === Tab.Add" class="h-screen">
+            <div class="p-6 select-none">
+                <div class="text-c4 font-bold">ADD FRIEND</div>
+                <div class="text-c5">You can add a friend with the combination of their name and
+                    tag. It's cAsE senSitEve!
+                </div>
+                <form [formGroup]="addUserForm" (ngSubmit)="onSubmit(addUserForm.value)"
+                    class="flex flex-row bg-c4 my-2 p-2 border">
+                    <input class="flex-1 bg-c4 text-c1" id="nameAndTag" type="text" formControlName="nameAndTag"
+                        placeholder="Enter a Name#0000">
+                    <button class="flex button mx-2 my-1 px-1 rounded-none" type="submit"
+                        [disabled]="!addUserForm.valid"
+                        [ngClass]="{'bg-c2 cursor-default': !addUserForm.valid, 'bg-c1 cursor-pointer': addUserForm.valid}">Add
+                        Friend</button>
+                </form>
+                <div *ngIf="showError" class="bg-red-700 text-c1 p-3 w-full font-bold flex justify-between">
+                    <div>{{errorMsg}}</div>
+                    <div class="text-xl cursor-pointer" (click)="showError=false">x</div>
+                </div>
+                <div *ngIf="showSuccess" class="bg-green-700 text-c1 p-3 w-full font-bold flex justify-between">
+                    <div>Sucess</div>
+                    <div class="text-xl cursor-pointer" (click)="showSuccess=false">x</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="w-20 flex flex-col justify-between bg-c4">
+        <div class="flex flex-col">
+            <div class="w-8 h-8 m-6 cursor-pointer" (click)="tab = Tab.Friends" tooltip="Friends" placement="left">
+                <img class="w-8 h-8 pointer-events-none select-none" src="../../../assets/icons/users.svg">
+            </div>
+            <div class="w-8 h-8 m-6 cursor-pointer" (click)="tab = Tab.Requests" tooltip="Requests" placement="left">
+                <img class="w-8 h-8 pointer-events-none select-none" src="../../../assets/icons/user-check.svg">
+            </div>
+            <div class="w-8 h-8 m-6 cursor-pointer" (click)="tab = Tab.Blocked" tooltip="Blocked" placement="left">
+                <img class="w-8 h-8 pointer-events-none select-none" src="../../../assets/icons/user-x.svg">
+            </div>
+            <div class="w-8 h-8 m-6 cursor-pointer" (click)="tab = Tab.Add" tooltip="Add" placement="left">
+                <img class="w-8 h-8 pointer-events-none select-none" src="../../../assets/icons/user-plus.svg">
+            </div>
+        </div>
+        <div class="flex">
+            <div class="w-8 h-8 m-6 cursor-pointer" tooltip="Settings" placement="left"
+                (click)="showSettingsOverlay=true">
+                <img class="w-8 h-8 pointer-events-none select-none" src="../../../assets/icons/sliders.svg">
+            </div>
+        </div>
+    </div>
+</div>
+<app-settings-overlay *ngIf="showSettingsOverlay" (closeEvent)="showSettingsOverlay=false"></app-settings-overlay>

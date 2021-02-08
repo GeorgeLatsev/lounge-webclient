@@ -1,0 +1,22 @@
+<div class="h-screen w-screen flex flex-col justify-center select-none bg-c4">
+    <div class="flex flex-row justify-center">
+        <div class="flex w-64">
+            <img src="../../../assets/images/Humaaans.Welcome.1.png">
+        </div>
+        <div class="flex flex-col w-64 h-64 my-8">
+            <div class="text-4xl font-bold text-c1">Hello</div>
+            <div class="text mb-8 text-c2">Start by choosing a name</div>
+            <form [formGroup]="nameForm" (ngSubmit)="onSubmit(nameForm.value)" class="flex flex-col">
+                <input class="flex p-1 rounded-none bg-c4 text-c1 border-b border-c1" id="name" type="text"
+                    formControlName="name" placeholder="Type here">
+                <div class="flex flex-row justify-end mt-4">
+                    <button type="submit" class="bg-c4 p-1 border border-c1 rounded-none text-c1"
+                        [disabled]="!nameForm.valid">Next</button>
+                </div>
+            </form>
+        </div>
+        <div class="flex w-64">
+            <img src="../../../assets/images/Humaaans.Welcome.2.png">
+        </div>
+    </div>
+</div>
